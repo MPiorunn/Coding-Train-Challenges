@@ -28,4 +28,6 @@ Node.prototype.addNode = function (node) {
         if (this.right == null) this.right = node;
         else this.right.addNode(node); // recursion
     }
+
+
 };
