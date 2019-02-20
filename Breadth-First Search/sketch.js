@@ -25,18 +25,51 @@ function setup() {
             movieNode.addEdge(actorNode);
         }
     }
-    console.log(graph);
+    var start = graph.setStart('Rachel McAdams');
+    // var start = graph.setStart('Kevin Bacon'); - found immediately
+    var end = graph.setEnd('Kevin Bacon');
+
+    var queue = [];
+
+    start.searched = true;
+    queue.push(start);
+
+    while (queue.length > 0) {
+        var current = queue.shift();
+        if (current === end) {
+            console.log("Found! " + current.value);
+            break;
+        }
+        var edges = current.edges;
+        for (var i = 0; i < edges.length; i++) {
+            var neighbor = edges[i];
+            if (!neighbor.searched) {
+                neighbor.searched = true;
+                neighbor.parent = current;
+                queue.push(neighbor);
+            }
+        }
+    }
+
+    var path = [];
+
+    path.push(end);
+    var next = end.parent;
+    while (next != null) {
+        path.push(next);
+        next = next.parent
+    }
+    var txt = '';
+
+    for (i = path.length - 1; i >= 0; i--) {
+        var n = path[i];
+        txt += n.value;
+        if (i != 0) {
+            txt += ' --> ';
+        }
+    }
+
+    console.log(txt);
+
 }
 
-function Node(value) {
-    this.value = value;
-    this.edges = [];
-    this.searched = false;
-    this.parent = null;
-}
-
-Node.prototype.addEdge = function (neighbor) {
-    this.edges.push(neighbor);
-    // both directions
-    neighbor.edges.push(this)
-};
