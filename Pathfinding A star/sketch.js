@@ -1,5 +1,5 @@
-var cols = 25;
-var rows = 25;
+var cols = 50;
+var rows = 50;
 var grid = new Array(cols);
 
 var openSet = [];
@@ -11,42 +11,6 @@ var w, h;
 
 var path = [];
 
-function Spot(i, j) {
-    //coordinates
-    this.x = i;
-    this.y = j;
-    //values from equation
-    this.f = 0;
-    this.g = 0;
-    this.h = 0;
-    this.neighbors = [];
-    this.previous = undefined;
-
-    this.show = function (color) {
-        fill(color);
-        noStroke();
-        rect(this.x * w, this.y * h, w - 1, h - 1);
-    };
-
-    this.addNeighbors = function (grid) {
-        var x = this.x;
-        var y = this.y;
-        /* pushing all 4 neighbors
-                    n
-                  n s n
-                    n
-        */
-        if (x < cols - 1)
-            this.neighbors.push(grid[x + 1][y]);
-        if (x > 0)
-            this.neighbors.push(grid[x - 1][y]);
-        if (y < rows - 1)
-            this.neighbors.push(grid[x][y + 1]);
-        if (y > 0)
-            this.neighbors.push(grid[x][y - 1]);
-    }
-
-}
 
 function removeFromArray(arr, item) {
     for (var i = arr.length - 1; i >= 0; i--) {
@@ -58,9 +22,11 @@ function removeFromArray(arr, item) {
 
 function heuristic(a, b) {
     // euclidean distance
-    // var d = dist(a.x, a.y, b.x, b.y);
+    var d = dist(a.x, a.y, b.x, b.y);
+
     // manhattan value
-    return abs(a.x - b.x) + abs(a.y - b.y);
+    // var d =  abs(a.x - b.x) + abs(a.y - b.y);
+    return d;
 }
 
 function setup() {
@@ -68,17 +34,17 @@ function setup() {
     console.log('A*');
     w = width / cols;
     h = height / rows;
-    for (let i = 0; i < cols; i++) {
+    for (var i = 0; i < cols; i++) {
         grid[i] = new Array(rows)
     }
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
+    for (var i = 0; i < cols; i++) {
+        for (var j = 0; j < rows; j++) {
             grid[i][j] = new Spot(i, j);
         }
     }
 
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
+    for (var i = 0; i < cols; i++) {
+        for (var j = 0; j < rows; j++) {
             grid[i][j].addNeighbors(grid)
         }
     }
@@ -86,24 +52,27 @@ function setup() {
 
     // setting start and end points
     start = grid[0][0];
-    end = grid[cols - 1][3];
-
+    end = grid[cols - 1][rows - 1];
+    start.wall = false;
+    end.wall = false;
     openSet.push(start);
 
-    console.log(grid);
 }
 
 // use it as a while loop
 function draw() {
+    //algorithm A*
     if (openSet.length > 0) {
-        //algorithm A*
         var win = 0;
         for (var i = 0; i < openSet.length; i++) {
-            if (openSet[i].f < openSet[win]) win = i;
+            if (openSet[i].f < openSet[win].f) {
+                win = i;
+            }
         }
         var current = openSet[win];
         if (current == end) {
-            // Find the path
+            // Found the path
+            noLoop();
             console.log("DONE!");
         }
 
@@ -111,37 +80,44 @@ function draw() {
         removeFromArray(openSet, current);
         closedSet.push(current);
         // for all neighbors of the current
-        var neighbors = current.neighbors
+        var neighbors = current.neighbors;
         for (var i = 0; i < neighbors.length; i++) {
             var neighbor = neighbors[i];
 
-            if (!closedSet.includes(neighbor)) {
+            if (!closedSet.includes(neighbor) && !neighbor.wall) {
                 // we evaluate each  neighbor
 
-                var tmpG = current.g + 1;
+                var tmpG = current.g + heuristic(neighbor, current);
+                var newPath = false;
                 if (openSet.includes(neighbor)) {
                     if (tmpG < neighbor.g) {
                         neighbor.g = tmpG;
+                        newPath = true;
                     }
                 } else {
                     neighbor.g = tmpG;
+                    newPath = true;
                     openSet.push(neighbor);
                 }
-
-                // calculate h
-                neighbor.h = this.heuristic(neighbor, end);
-                neighbor.f = neighbor.g + neighbor.h;
-                //to restore the path after algorithm finishes
-                neighbor.previous = current;
+                if (newPath) {
+                    // calculate h
+                    neighbor.h = this.heuristic(neighbor, end);
+                    neighbor.f = neighbor.g + neighbor.h;
+                    //to restore the path after algorithm finishes
+                    neighbor.previous = current;
+                }
             }
         }
     } else {
         // no solution
+        console.log("no solution");
+        noLoop();
+        return;
     }
-    background(0);
+    background(255);
 
     for (var i = 0; i < cols; i++) {
-        for (var j = 0; j < cols; j++) {
+        for (var j = 0; j < rows; j++) {
             grid[i][j].show(color(255))
         }
     }
@@ -156,15 +132,20 @@ function draw() {
 
     path = [];
     var tmp = current;
+    path.push(tmp);
     while (tmp.previous) {
         path.push(tmp.previous);
         tmp = tmp.previous;
     }
 
+    noFill();
+    stroke(255,0,200);
+    strokeWeight(w / 2);
+    beginShape();
     for (var i = 0; i < path.length; i++) {
-        path[i].show(color(0, 0, 255))
+        vertex(path[i].x * w + w / 2, path[i].y * h + h / 2);
     }
-
+    endShape();
 }
 
 
