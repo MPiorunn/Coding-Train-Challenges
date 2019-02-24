@@ -17,14 +17,15 @@ function removeFromArray(arr, elt) {
 
 // An educated guess of how far it is between two points
 function heuristic(a, b) {
-    var d = dist(a.i, a.j, b.i, b.j);
+    var d;
+    d = dist(a.i, a.j, b.i, b.j);
     // var d = abs(a.i - b.i) + abs(a.j - b.j);
     return d;
 }
 
 // How many columns and rows?
-var cols = 50;
-var rows = 50;
+var cols = 100;
+var rows = 100;
 
 // This will be the 2D array
 var grid = new Array(cols);
@@ -44,7 +45,7 @@ var w, h;
 var path = [];
 
 function setup() {
-    createCanvas(400, 400);
+    createCanvas(1000, 1000);
     console.log('A*');
 
     // Grid cell size
