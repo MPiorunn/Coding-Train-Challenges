@@ -59,18 +59,17 @@ function Cell(x, y) {
         }
         //pick a random neighbor
         if (neighbors.length > 0) {
-            var neighbor = neighbors[floor(random(0, neighbors.length))];
-            return neighbor;
+            return neighbors[floor(random(0, neighbors.length))];
         } else {
             return undefined;
         }
-    }
+    };
 
     this.highlight = function () {
         var x = this.x * size;
         var y = this.y * size;
         noStroke();
-        fill(0, 0, 255, 100);
+        fill(255);
         rect(x, y, size, size)
     }
 }

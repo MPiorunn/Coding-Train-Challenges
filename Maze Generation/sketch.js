@@ -1,6 +1,6 @@
 var cols;
 var rows;
-var size = 40;
+var size = 20;
 var cells = [];
 
 const TOP = 0;
