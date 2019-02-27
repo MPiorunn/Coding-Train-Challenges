@@ -30,9 +30,6 @@ function draw() {
     // var j = floor(random(totalCities));
 
 
-
-
-    //meme
     //shuffle the array
     // swap(cities, i, j);
 
