@@ -18,8 +18,6 @@ function setup() {
 function draw() {
     background(0);
     fill(255);
-    // xD
-    // Another test
     // frameRate(1);
     //draw cities
     for (var i = 0; i < totalCities; i++) {
