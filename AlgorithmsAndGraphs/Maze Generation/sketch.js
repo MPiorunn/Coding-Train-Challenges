@@ -1,6 +1,6 @@
 var cols;
 var rows;
-var size = 20;
+var size = 40;
 var cells = [];
 
 const TOP = 0;
@@ -20,7 +20,7 @@ function setup() {
             cells.push(new Cell(i, j));
         }
     }
-    // frameRate(5);
+    frameRate(2);
     current = cells[0];
 }
 
