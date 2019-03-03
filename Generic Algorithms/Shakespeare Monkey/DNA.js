@@ -45,6 +45,9 @@ class DNA {
             }
         }
         this.fitness = score / target.length;
+        // we are making a slightly different fitness function(trying to improve it)
+        // this.fitness = pow(this.fitness, 2);
+        this.fitness = pow(this.fitness, 2) + 0.01;
     }
 
     // Crossover

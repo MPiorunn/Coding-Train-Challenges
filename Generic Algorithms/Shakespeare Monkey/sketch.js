@@ -31,7 +31,7 @@ function setup() {
 
 function draw() {
     // Generate mating pool
-    population.naturalSelection();
+    // population.naturalSelection();
     //Create next generation
     population.generate();
     // Calculate fitness
@@ -116,4 +116,24 @@ N-times:
         faster with smaller population, which will take less time to compute
 
 
+More notes than coding.
+1. Fitness function - base to the evolution
+    ex. the closer you get to the target, the better is the fitness
+
+    Checking 'unicorn' each time is ok, or ' to be or not to be',
+     but what if we need 200000chars?
+     Our fitness function sucks. :D
+     We are looking for a 200000 chars and we picked two elements
+     1 . has 39333 chars ok
+     2 . has 39334 chars ok
+     The 2nd one is better, so we want it to be more likely to be picked in evolution process.
+     But 39333/200000 is not that much different from 39334/200000 :(
+     How can we made this element to be more likely picked?
+
+     We can make the fitness function exponential instead of linear for example.
+2. How do you encode your DNA?
+    genotype vs phenotype
+
+    genotype - data itself or encoded
+    phenotype - expression (visualisation)
  */

@@ -6,12 +6,13 @@
 
 // A class to describe a population of virtual organisms
 // In this case, each organism is just an instance of a DNA object
+var maxFitness = 0;
 
 class Population {
     constructor(p, m, num) {
 
         this.population = []; // Array to hold the current population
-        this.matingPool = []; // ArrayList which we will use for our "mating pool"
+        // this.matingPool = []; // ArrayList which we will use for our "mating pool"
         this.generations = 0; // Number of generations
         this.finished = false; // Are we finished evolving?
         this.target = p; // Target phrase
@@ -38,40 +39,50 @@ class Population {
     // Generate a mating pool
     naturalSelection() {
         // Clear the ArrayList
-        this.matingPool = [];
+        // we remove a mating pool
+        // this.matingPool = [];
 
-        let maxFitness = 0;
+        // we move this to generate function
+        // let maxFitness = 0;
+        // for (let i = 0; i < this.population.length; i++) {
+        //     if (this.population[i].fitness > maxFitness) {
+        //         maxFitness = this.population[i].fitness;
+        //     }
+        // }
+
+        // Based on fitness, each member will get added to the mating pool a certain number of times
+        // a higher fitness = more entries to mating pool = more likely to be picked as a parent
+        // a lower fitness = fewer entries to mating pool = less likely to be picked as a parent
+        // for (let i = 0; i < this.population.length; i++) {
+        //     let fitness = map(this.population[i].fitness, 0, maxFitness, 0, 1);
+        //     let n = floor(fitness * 100); // Arbitrary multiplier, we can also use monte carlo method
+        //     for (let j = 0; j < n; j++) { // and pick two random numbers
+        //         this.matingPool.push(this.population[i]);
+        //     }
+        // }
+    }
+
+    // Create a new generation
+    generate() {
         for (let i = 0; i < this.population.length; i++) {
             if (this.population[i].fitness > maxFitness) {
                 maxFitness = this.population[i].fitness;
             }
         }
 
-        // Based on fitness, each member will get added to the mating pool a certain number of times
-        // a higher fitness = more entries to mating pool = more likely to be picked as a parent
-        // a lower fitness = fewer entries to mating pool = less likely to be picked as a parent
-        for (let i = 0; i < this.population.length; i++) {
+        var newPopulation = [];
 
-            let fitness = map(this.population[i].fitness, 0, maxFitness, 0, 1);
-            let n = floor(fitness * 100); // Arbitrary multiplier, we can also use monte carlo method
-            for (let j = 0; j < n; j++) { // and pick two random numbers
-                this.matingPool.push(this.population[i]);
-            }
-        }
-    }
-
-    // Create a new generation
-    generate() {
         // Refill the population with children from the mating pool
         for (let i = 0; i < this.population.length; i++) {
-            let a = floor(random(this.matingPool.length));
-            let b = floor(random(this.matingPool.length));
-            let partnerA = this.matingPool[a];
-            let partnerB = this.matingPool[b];
+            // let a = floor(random(this.matingPool.length));
+            // let b = floor(random(this.matingPool.length));
+            let partnerA = this.acceptReject();
+            let partnerB = this.acceptReject();
             let child = partnerA.crossover(partnerB);
             child.mutate(this.mutationRate);
-            this.population[i] = child;
+            newPopulation[i] = child;
         }
+        this.population = newPopulation;
         this.generations++;
     }
 
@@ -92,7 +103,7 @@ class Population {
         }
 
         this.best = this.population[index].getPhrase();
-        if (worldrecord === this.perfectScore) {
+        if (worldrecord >= this.perfectScore) {
             this.finished = true;
         }
     }
@@ -125,4 +136,21 @@ class Population {
         }
         return everything;
     }
+
+    acceptReject() {
+        var beSafe = 0;
+        while (true) {
+            const index = floor(random(0, this.population.length));
+            var partner = this.population[index];
+            var r = random(0, maxFitness);
+            if (r < partner.fitness) {
+                return partner;
+            }
+            beSafe++;
+            if (beSafe > 10000) {
+                return null;
+            }
+        }
+    }
 }
+
