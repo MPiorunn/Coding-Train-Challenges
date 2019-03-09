@@ -33,38 +33,30 @@ function Vehicle(x, y) {
 
     this.eat = function (list, nutrition, perception) {
         var record = Infinity;
-        var closestIndex = null;
-        for (var i = 0; i < list.length; i++) {
+        var closest = null;
+        for (var i = list.length - 1; i > 0; i--) {
             var d = this.position.dist(list[i]);
-            if (d < record && d < perception) {
+
+            if (d < this.maxspeed) {
+                list.splice(i, 1);
+                this.health += nutrition;
+            } else if (d < record && d < perception) {
                 record = d;
-                closestIndex = i;
+                closest = list[i];
             }
+
         }
 
-        if (record < 5) {
-            list.splice(closestIndex, 1);
-            console.log("ENEN")
-            console.log(nutrition)
-            console.log(this.health)
-            this.health += nutrition;
-            console.log(this.health)
-            console.log("ENEN")
-        } else if (closestIndex > 0) {
-            return this.seek(list[closestIndex]);
+
+        if (closest !== null) {
+            return this.seek(closest);
         }
 
         return createVector(0, 0);
     };
 
     this.dead = function () {
-        dd = this.health < 0;
-        if (dd) {
-            console.log("Dying :(");
-            console.log(this.health);
-            return true;
-        }
-        return false;
+        return this.health < 0;
     };
 
 
