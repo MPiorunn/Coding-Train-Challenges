@@ -35,16 +35,17 @@ function draw() {
         var y = random(height);
         food.push(createVector(x, y));
     }
-    // var target = createVector(mouseX, mouseY);
-    //
-    // fill(127);
-    // stroke(200);
-    // strokeWeight(2);
-    // ellipse(target.x, target.y, 48, 48);
+    if (random(1) < 0.01) {
+        var x = random(width);
+        var y = random(height);
+        poison.push(createVector(x, y));
+    }
+
     drawFood();
     drawPoison();
 
     for (var i = vehicles.length - 1; i > 0; i--) {
+        vehicles[i].boundaries();
         vehicles[i].behaviors(food, poison);
         // vehicle.seek(food);
         vehicles[i].update();
