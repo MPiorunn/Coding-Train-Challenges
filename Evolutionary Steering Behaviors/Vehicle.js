@@ -1,5 +1,9 @@
+var mr = .01;
+var dieRate = 0.005;
+var foodValue = 0.3;
+var poisonValue = -0.75;
 // Create a new vehicle
-function Vehicle(x, y) {
+function Vehicle(x, y, dna) {
 
     // All the physics stuff
     this.acceleration = createVector(0, 0);
@@ -9,26 +13,55 @@ function Vehicle(x, y) {
     this.maxspeed = 8;
     this.maxforce = 0.5;
     this.dna = [];
-    //food weight
-    this.dna[0] = random(-2, 2);
-    //poison weight
-    this.dna[1] = random(-2, 2);
-    //food perception
-    this.dna[2] = random(0, 100);
-    //poison perception
-    this.dna[3] = random(0, 100);
+    if (dna === undefined) {
+        // new vehicle
+
+        //food weight
+        this.dna[0] = random(-2, 2);
+        //poison weight
+        this.dna[1] = random(-2, 2);
+        //food perception
+        this.dna[2] = random(0, 100);
+        //poison perception
+        this.dna[3] = random(0, 100);
+    } else {
+        // cloned vehicle
+        this.dna[0] = dna[0];
+        if (random(1) < mr) {
+            this.dna[0] += random(-.1, .1)
+        }
+        this.dna[1] = dna[1];
+        if (random(1) < mr) {
+            this.dna[1] += random(-.1, .1)
+        }
+        this.dna[2] = dna[2];
+        if (random(1) < mr) {
+            this.dna[2] += random(-10, 10)
+        }
+        this.dna[3] = dna[3];
+        if (random(1) < mr) {
+            this.dna[3] += random(-10, 10)
+        }
+    }
 
     this.health = 1;
 
     this.behaviors = function (good, bad) {
-        var steerGood = this.eat(good, 0.1, this.dna[2]);
-        var steerBad = this.eat(bad, -0.5, this.dna[3]);
+        var steerGood = this.eat(good, foodValue, this.dna[2]);
+        var steerBad = this.eat(bad, poisonValue, this.dna[3]);
 
         steerGood.mult(this.dna[0]);
         steerBad.mult(this.dna[1]);
 
         this.applyForce(steerGood);
         this.applyForce(steerBad);
+    };
+
+
+    this.clone = function () {
+        if (random(1) < 0.001)
+            return new Vehicle(this.position.x, this.position.y, this.dna);
+        return null;
     };
 
     this.eat = function (list, nutrition, perception) {
@@ -44,9 +77,7 @@ function Vehicle(x, y) {
                 record = d;
                 closest = list[i];
             }
-
         }
-
 
         if (closest !== null) {
             return this.seek(closest);
@@ -62,7 +93,7 @@ function Vehicle(x, y) {
 
 // Method to update location
     this.update = function () {
-        this.health += -0.001;
+        this.health -= dieRate;
         // Update velocity
         this.velocity.add(this.acceleration);
         // Limit speed
@@ -102,15 +133,17 @@ function Vehicle(x, y) {
         push();
         translate(this.position.x, this.position.y);
         rotate(angle);
-        noFill();
-        stroke(0, 255, 0);
-        strokeWeight(3);
-        ellipse(0, 0, this.dna[2] * 2);
-        line(0, 0, 0, -this.dna[0] * 25);
-        stroke(255, 0, 0);
-        strokeWeight(2);
-        line(0, 0, 0, -this.dna[1] * 25);
-        ellipse(0, 0, this.dna[3] * 2);
+        if(debug.checked()){
+            noFill();
+            stroke(0, 255, 0);
+            strokeWeight(3);
+            ellipse(0, 0, this.dna[2] * 2);
+            line(0, 0, 0, -this.dna[0] * 25);
+            stroke(255, 0, 0);
+            strokeWeight(2);
+            line(0, 0, 0, -this.dna[1] * 25);
+            ellipse(0, 0, this.dna[3] * 2);
+        }
 
         // Draw the vehicle itself
 

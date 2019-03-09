@@ -4,14 +4,15 @@ var poison = [];
 var foods = 50;
 var poisons = 10;
 var vehiclesAmount = 10;
+var debug;
 
 function setup() {
     // Add canvas and grab checkbox
     createCanvas(800, 600);
+    debug = createCheckbox();
+
     for (var i = 0; i < vehiclesAmount; i++) {
-        var a = random(width);
-        var b = random(height);
-        vehicles[i] = new Vehicle(a, b);
+        addVehicle(random(width), random(height));
     }
     for (var i = 0; i < foods; i++) {
         var x = random(width);
@@ -25,53 +26,77 @@ function setup() {
     }
 }
 
+function addVehicle(a, b) {
+    vehicles.push(new Vehicle(a, b));
+}
+
+
+function mouseDragged() {
+    addVehicle(mouseX, mouseY)
+}
 
 function draw() {
     background(51);
 
-
-    if (random(1) < 0.05) {
-        var x = random(width);
-        var y = random(height);
-        food.push(createVector(x, y));
-    }
-    if (random(1) < 0.01) {
-        var x = random(width);
-        var y = random(height);
-        poison.push(createVector(x, y));
-    }
-
     drawFood();
     drawPoison();
+    drawVehicles();
+}
 
+function drawFood() {
+    addFood();
+    for (var i = 0; i < food.length; i++) {
+        fill(0, 255, 0);
+        noStroke();
+        ellipse(food[i].x, food[i].y, 4, 4);
+    }
+}
+
+function addFood() {
+    if (random(1) < 0.1) {
+        food.push(createVector(random(width), random(height)));
+    }
+}
+
+function drawPoison() {
+    addPoison();
+    for (var i = 0; i < poison.length; i++) {
+        fill(255, 0, 0);
+        noStroke();
+        ellipse(poison[i].x, poison[i].y, 4, 4);
+    }
+}
+
+function addPoison() {
+    if (random(1) < 0.01) {
+        poison.push(createVector(random(width), random(height)));
+    }
+}
+
+
+function drawVehicles() {
     for (var i = vehicles.length - 1; i > 0; i--) {
         vehicles[i].boundaries();
         vehicles[i].behaviors(food, poison);
         // vehicle.seek(food);
         vehicles[i].update();
         vehicles[i].display();
+
+        var newVehicle = vehicles[i].clone();
+        if (newVehicle !== null) {
+            vehicles.push(newVehicle);
+        }
+
         if (vehicles[i].dead()) {
+            // if vehicle dies, we create a food in this place
+            food.push(createVector(vehicles[i].position.x, vehicles[i].position.y));
             vehicles.splice(i, 1);
         }
-    }
 
-}
 
-function drawFood() {
-    for (var i = 0; i < food.length; i++) {
-        fill(0, 255, 0);
-        noStroke();
-        ellipse(food[i].x, food[i].y, 8, 8);
     }
 }
 
-function drawPoison() {
-    for (var i = 0; i < poison.length; i++) {
-        fill(255, 0, 0);
-        noStroke();
-        ellipse(poison[i].x, poison[i].y, 8, 8);
-    }
-}
 
 /*
 we have a 2D world with dots (food - green , poison - red)
