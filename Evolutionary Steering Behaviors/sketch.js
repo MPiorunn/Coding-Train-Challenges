@@ -1,9 +1,28 @@
-var vehicle;
+var vehicles = [];
+var food = [];
+var poison = [];
+var foods = 50;
+var poisons = 10;
+var vehiclesAmount = 10;
 
 function setup() {
     // Add canvas and grab checkbox
-    var canvas = createCanvas(800, 600);
-    vehicle = new Vehicle(540, 230);
+    createCanvas(800, 600);
+    for (var i = 0; i < vehiclesAmount; i++) {
+        var a = random(width);
+        var b = random(height);
+        vehicles[i] = new Vehicle(a, b);
+    }
+    for (var i = 0; i < foods; i++) {
+        var x = random(width);
+        var y = random(height);
+        food.push(createVector(x, y));
+    }
+    for (var i = 0; i < poisons; i++) {
+        var x = random(width);
+        var y = random(height);
+        poison.push(createVector(x, y));
+    }
 }
 
 
@@ -11,17 +30,46 @@ function draw() {
     background(51);
 
 
-    var target = createVector(mouseX, mouseY);
+    if (random(1) < 0.05) {
+        var x = random(width);
+        var y = random(height);
+        food.push(createVector(x, y));
+    }
+    // var target = createVector(mouseX, mouseY);
+    //
+    // fill(127);
+    // stroke(200);
+    // strokeWeight(2);
+    // ellipse(target.x, target.y, 48, 48);
+    drawFood();
+    drawPoison();
 
-    fill(127);
-    stroke(200);
-    strokeWeight(2);
-    ellipse(target.x, target.y, 48, 48)
+    for (var i = vehicles.length - 1; i > 0; i--) {
+        vehicles[i].behaviors(food, poison);
+        // vehicle.seek(food);
+        vehicles[i].update();
+        vehicles[i].display();
+        if (vehicles[i].dead()) {
+            vehicles.splice(i, 1);
+        }
+    }
 
-    vehicle.seek(target);
-    vehicle.update();
-    vehicle.display()
+}
 
+function drawFood() {
+    for (var i = 0; i < food.length; i++) {
+        fill(0, 255, 0);
+        noStroke();
+        ellipse(food[i].x, food[i].y, 8, 8);
+    }
+}
+
+function drawPoison() {
+    for (var i = 0; i < poison.length; i++) {
+        fill(255, 0, 0);
+        noStroke();
+        ellipse(poison[i].x, poison[i].y, 8, 8);
+    }
 }
 
 /*
