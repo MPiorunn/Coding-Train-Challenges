@@ -1,6 +1,7 @@
 var data;
 var users = {};
 var resultDivs = [];
+const notSeen = 'Not seen';
 
 function preload() {
     data = loadJSON('movies.json')
@@ -8,32 +9,50 @@ function preload() {
 
 function setup() {
     noCanvas();
-    var dropdown1 = createSelect('');
-    for (let i = 0; i < data.users.length; i++) {
-        var name = data.users[i].name;
-        dropdown1.option(name);
-        users[name] = data.users[i]
+    var dropdowns = [];
+    var titles = data.titles;
+    for (let i = 0; i < titles.length; i++) {
+        var div = createDiv(titles[i]);
+        var dropdown = createSelect('');
+        dropdown.title = titles[i];
+        dropdown.parent(div);
+        dropdown.option(notSeen);
+        for (let j = 1; j < 6; j++) {
+            dropdown.option(j);
+        }
+        dropdowns.push((dropdown))
     }
 
     var button = createButton('submit');
 
-    button.mousePressed(findNearestNeighbors);
+    button.mousePressed(predictRatings);
 
-    function findNearestNeighbors() {
+    function predictRatings() {
+        var newUser = {};
+        for (let i = 0; i < dropdowns.length; i++) {
+            var title = dropdowns[i].title;
+            var rating = dropdowns[i].value();
+            if (rating === notSeen) {
+                rating = null;
+            }
+            newUser[title] = rating;
+        }
+
+        findNearestNeighbors(newUser)
+    }
+
+    function findNearestNeighbors(user) {
+
         for (let i = 0; i < resultDivs.length; i++) {
             resultDivs[i].remove()
         }
+
         resultDivs = [];
-        var name = dropdown1.value();
 
         var similarityScores = {};
         for (let i = 0; i < data.users.length; i++) {
-            let other = data.users[i].name;
-            if (other !== name) {
-                similarityScores[other] = euclideanDistance(name, other);
-            } else {
-                similarityScores[other] = -1
-            }
+            let other = data.users[i];
+            similarityScores[other.name] = euclideanDistance(user, other);
         }
 
         data.users.sort(compareSimilarity);
@@ -45,26 +64,40 @@ function setup() {
             return score2 - score1
         }
 
-        console.log(data.users);
+        for (let i = 0; i < data.titles.length; i++) {
+            var t = data.titles[i];
+            if (user[t] === null) {
 
-        for (let i = 0; i < 5; i++) {
-            var name1 = data.users[i].name;
-            resultDivs.push(createDiv(name1 + " : " + similarityScores[name1]));
+                var k = 5;
+                // var sum = 0;
+                var weightedSum = 0;
+                var similaritySum = 0;
+                for (let j = 0; j < k; j++) {
+                    var ratings = data.users[j];
+                    var name = ratings.name;
+                    var score = similarityScores[name];
+                    var rating = ratings[t];
+                    // sum += rating;
+                    if (rating !== null) {
+                        weightedSum += rating * score;
+                        similaritySum += score;
+                    }
+                }
+                // var stars = nf(sum / k, 1, 2);
+                var stars = nf(weightedSum / similaritySum, 1, 2);
+                var div = createDiv(t + " : " + stars);
+                resultDivs.push(div);
+            }
         }
+
+
     }
 
 }
 
-function euclideanDistance(name1, name2) {
+function euclideanDistance(ratings1, ratings2) {
 
-    var ratings1 = users[name1];
-    var ratings2 = users[name2];
-
-    var titles = Object.keys(ratings1);
-
-    titles.splice(titles.indexOf('name'), 1);
-    titles.splice(titles.indexOf('timestamp'), 1);
-
+    var titles = data.titles;
 
     var sumSquared = 0;
     for (let i = 0; i < titles.length; i++) {
