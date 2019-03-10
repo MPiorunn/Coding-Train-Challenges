@@ -25,7 +25,7 @@ function sizePlay(number, i, j) {
     fill(0);
     noStroke();
     // if (number > mouseSize && number < mouseSize * 4) {
-    var size = (i + j)/number;
+    var size = 500/number;
     if (size > 50) {
         size = 50;
     }
