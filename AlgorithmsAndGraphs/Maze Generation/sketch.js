@@ -20,7 +20,7 @@ function setup() {
             cells.push(new Cell(i, j));
         }
     }
-    frameRate(2);
+    frameRate(15);
     current = cells[0];
 }
 
