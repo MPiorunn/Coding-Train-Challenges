@@ -186,5 +186,16 @@ function draw() {
     endShape();
 
 
+}
 
+
+function nextHappyYear(year) {
+    while (!hasDifferentNumbers(year)) {
+        year++;
+    }
+    return year;
+}
+
+function hasDifferentNumbers(number) {
+    return false;
 }
