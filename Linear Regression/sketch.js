@@ -8,18 +8,22 @@ function setup() {
 }
 
 function gradientDescent() {
+    var learningRate = 0.05;
     for (let i = 0; i < data.length; i++) {
         var x = data[i].x;
         var y = data[i].y;
 
         var guess = m * x + b;
-        var error = guess - y;
+        var error = y - guess;
 
         // how should we change these values?
-        m += error * x;
-        b += error;
+        m = m + (error * x) * learningRate;
+        b = b + (error * learningRate);
+        console.log(m, b);
+
     }
 }
+
 
 // function linearRegression() {
 //     var xSum = 0;
