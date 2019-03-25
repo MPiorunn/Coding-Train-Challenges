@@ -1,32 +1,47 @@
 var data = [];
-var m = 1;
+
+var m = 0;
 var b = 0;
 
 function setup() {
     createCanvas(400, 400);
 }
 
-function linearRegression() {
-    var xSum = 0;
-    var yYum = 0;
-    for (let i = 0; i < data.length; i++) {
-        xSum += data[i].x;
-        yYum += data[i].y;
-    }
-    var xMean = xSum / data.length;
-    var yMean = yYum / data.length;
-
-    var num = 0;
-    var den = 0;
+function gradientDescent() {
     for (let i = 0; i < data.length; i++) {
         var x = data[i].x;
         var y = data[i].y;
-        num += (x - xMean) * (y - yMean);
-        den += (x - xMean) * (x - xMean);
+
+        var guess = m * x + b;
+        var error = guess - y;
+
+        // how should we change these values?
+        m += error * x;
+        b += error;
     }
-    m = num / den;
-    b = yMean - m * xMean;
 }
+
+// function linearRegression() {
+//     var xSum = 0;
+//     var yYum = 0;
+//     for (let i = 0; i < data.length; i++) {
+//         xSum += data[i].x;
+//         yYum += data[i].y;
+//     }
+//     var xMean = xSum / data.length;
+//     var yMean = yYum / data.length;
+//
+//     var num = 0;
+//     var den = 0;
+//     for (let i = 0; i < data.length; i++) {
+//         var x = data[i].x;
+//         var y = data[i].y;
+//         num += (x - xMean) * (y - yMean);
+//         den += (x - xMean) * (x - xMean);
+//     }
+//     m = num / den;
+//     b = yMean - m * xMean;
+// }
 
 function drawLine() {
     var x1 = 0;
@@ -61,7 +76,7 @@ function draw() {
         ellipse(x, y, 8, 8,);
     }
     if (data.length > 1) {
-        linearRegression();
+        gradientDescent();
         drawLine()
     }
 }
