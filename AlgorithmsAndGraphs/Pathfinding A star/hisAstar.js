@@ -45,7 +45,7 @@ var w, h;
 var path = [];
 
 function setup() {
-    createCanvas(1000, 1000);
+    createCanvas(600, 600);
     console.log('A*');
 
     // Grid cell size

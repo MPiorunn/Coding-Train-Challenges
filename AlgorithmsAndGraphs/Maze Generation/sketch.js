@@ -12,7 +12,7 @@ var current;
 var stack = [];
 
 function setup() {
-    createCanvas(800, 800);
+    createCanvas(600, 600);
     cols = floor(width / size);
     rows = floor(height / size);
     for (let i = 0; i < cols; i++) {

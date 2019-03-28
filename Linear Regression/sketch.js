@@ -16,7 +16,6 @@ function gradientDescent() {
         var guess = m * x + b;
         var error = y - guess;
 
-        // how should we change these values?
         m = m + (error * x) * learningRate;
         b = b + (error * learningRate);
         console.log(m, b);
